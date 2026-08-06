@@ -23,7 +23,36 @@ API - сервис, который проводит платёжную опер�
 
 ## Структура проекта
   ```
+ payment_operation_service
+  ├── app/
+  │   ├── __init__.py
+  │   ├── config.py
+  │   ├── db.py
+  │   ├── lifespan.py
+  │   ├── main.py
+  │   ├── provider.py  
+  │   └── models.py
+  ├── README.md
+  ├── .env
+  ├── .env.example
+  ├── .gitignore
+  ├── .dockerignore
+  ├── requirements.txt
+  ├── Dockerfile
+  └── docker-compose.yml
 
+  ```
+
+## Переменные окружения (файл .env) по примеру .env.example
+  ```
+POSTGRES_USER=app_user
+POSTGRES_PASSWORD=app_password
+POSTGRES_DB=payment_db
+
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+
+PROVIDER_URL=http://provider-simulator:8081
+CALLBACK_URL=http://candidate-service:8080/receipts
 
   ```
 
@@ -48,27 +77,21 @@ API - сервис, который проводит платёжную опер�
   source .venv/bin/activate
   ```
 
-3. Создайте переменные окружения (файл .env) по примеру .env.example
-  ```
-
-
-  ```
-
-4. Установите зависимости
+3. Установите зависимости
   ```
   pip install -r requirements.txt
   ```
 
-5. Запустите приложение
+4. Запустите приложение
   ```
-  uvicorn app.main:app --reload --port 8000
+  uvicorn app.main:app --reload --port 8080
   ```
 ## Запуск приложения и создание БД
   ```
   docker-compose build
   docker-compose up
   
-  Приложение запустится локально на http://127.0.0.1:8000/. БД будет создана при первом запуске.
+  Приложение запустится локально на http://127.0.0.1:8080/. БД будет создана при первом запуске.
   ```
 
 ## Остановка приложения:
@@ -83,11 +106,50 @@ API - сервис, который проводит платёжную опер�
 
 ## Проверка работы
   ```
-
-
+  ### Проверка готовности
+  curl http://localhost:8080/health
+  ```
+  ```
+  ### Создание операции
+  curl -X POST http://localhost:8080/operations \
+  -H "Content-Type: application/json" \
+  -d '{"operationId": "op-123", "amount": "1000.00", "currency": "RUB", "description": "Test"}'
   ```
 
+  ```
+  ### Попытка повторного создания
+  curl -X POST http://localhost:8080/operations \
+    -H "Content-Type: application/json" \
+    -d '{"operationId": "op-123", "amount": "1000.00", "currency": "RUB", "description": "Test"}'
+  ```
 
+  ```
+  ### Отправка операции провайдеру
+  curl -X POST http://localhost:8080/operations/op-123/submit
+  ```
+
+  ```
+  ### Проверка состояния
+  curl http://localhost:8080/operations/op-123
+  ```
+
+  ```
+  ### Просмотр истории событий
+  curl http://localhost:8080/operations/op-123/events
+  ```
+
+  ```
+  ### Имитация прихода квитанции
+  curl -X POST http://localhost:8080/receipts \
+    -H "Content-Type: application/json" \
+    -d '{"providerPaymentId": "test-provider-id", "operationId": "op-123", "result": "COMPLETED", "message": "Success", "occurredAt": "2026-08-04T12:00:00Z"}'
+ ```
+
+ ```
+  ### Финальная проверка
+  curl http://localhost:8080/operations/op-123
+ 
+  ```
 
 
 ## Автор
