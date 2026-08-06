@@ -105,51 +105,52 @@ CALLBACK_URL=http://candidate-service:8080/receipts
   ```
 
 ## Проверка работы
-  ```
+
   ### Проверка готовности
+  ```
   curl http://localhost:8080/health
   ```
-  ```
+
   ### Создание операции
+  ```
   curl -X POST http://localhost:8080/operations \
   -H "Content-Type: application/json" \
   -d '{"operationId": "op-123", "amount": "1000.00", "currency": "RUB", "description": "Test"}'
   ```
 
-  ```
   ### Попытка повторного создания
+  ```
   curl -X POST http://localhost:8080/operations \
     -H "Content-Type: application/json" \
     -d '{"operationId": "op-123", "amount": "1000.00", "currency": "RUB", "description": "Test"}'
   ```
 
-  ```
   ### Отправка операции провайдеру
+  ```
   curl -X POST http://localhost:8080/operations/op-123/submit
   ```
 
-  ```
   ### Проверка состояния
+  ```
   curl http://localhost:8080/operations/op-123
   ```
 
-  ```
   ### Просмотр истории событий
+  ```
   curl http://localhost:8080/operations/op-123/events
   ```
 
-  ```
   ### Имитация прихода квитанции
+  ```
   curl -X POST http://localhost:8080/receipts \
     -H "Content-Type: application/json" \
     -d '{"providerPaymentId": "test-provider-id", "operationId": "op-123", "result": "COMPLETED", "message": "Success", "occurredAt": "2026-08-04T12:00:00Z"}'
  ```
 
- ```
   ### Финальная проверка
+ ```
   curl http://localhost:8080/operations/op-123
- 
-  ```
+   ```
 
 
 ## Автор
