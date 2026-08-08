@@ -3,12 +3,13 @@ import os
 import logging
 from typing import Optional, List, Dict, Any
 from fastapi import HTTPException
-
-from app.config import config
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
-DATABASE_URL = config.DATABASE_URL
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 _pool: Optional[asyncpg.Pool] = None
 
 
