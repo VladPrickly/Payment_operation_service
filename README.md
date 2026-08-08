@@ -70,7 +70,7 @@ CALLBACK_URL=http://candidate-service:8080/receipts
 2. Активируйте виртуальное окружение:
 - Windows:
   ```
-  .venv\Scripts\activate
+  .venv\bin\activate
   ```
 - Linux/macOS:
   ```
