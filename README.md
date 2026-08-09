@@ -26,7 +26,6 @@ API - сервис, который проводит платёжную опер�
  payment_operation_service
   ├── app/
   │   ├── __init__.py
-  │   ├── config.py
   │   ├── db.py
   │   ├── lifespan.py
   │   ├── main.py
